@@ -2,6 +2,9 @@
   "name": "terminal-in-status-bar",
   "displayName": "Terminal in Status Bar",
   "description": "Show terminal icon in status bar",
+  "repository": {
+    "url": "https://github.com/flyfly6/terminal-in-status-bar"
+  },
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.66.0"
@@ -10,7 +13,7 @@
     "Other"
   ],
   "activationEvents": [
-    "*"
+    "onStartupFinished"
   ],
   "main": "./out/extension.js",
   "contributes": {
