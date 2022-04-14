@@ -2,6 +2,7 @@
   "name": "terminal-in-status-bar",
   "displayName": "Terminal in Status Bar",
   "description": "Show terminal icon in status bar",
+  "publisher": "flyfly6",
   "repository": {
     "url": "https://github.com/flyfly6/terminal-in-status-bar"
   },
