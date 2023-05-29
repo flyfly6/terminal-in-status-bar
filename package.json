@@ -6,7 +6,7 @@
   "repository": {
     "url": "https://github.com/flyfly6/terminal-in-status-bar"
   },
-  "version": "0.1.0",
+  "version": "0.2.0",
   "engines": {
     "vscode": "^1.66.0"
   },
