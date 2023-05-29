@@ -5,6 +5,7 @@ import * as vscode from "vscode";
 const id = "terminal-in-status-bar";
 const ALIGNMENT_KEY = "statusBarAlignment";
 const PRIORITY_KEY = "statusBarPriority";
+const LABEL_KEY = "statusBarLabel";
 let statusBarItem: vscode.StatusBarItem;
 
 // this method is called when your extension is activated
@@ -19,7 +20,8 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.workspace.onDidChangeConfiguration((event) => {
       if (
         event.affectsConfiguration(`${id}.${ALIGNMENT_KEY}`) ||
-        event.affectsConfiguration(`${id}.${PRIORITY_KEY}`)
+        event.affectsConfiguration(`${id}.${PRIORITY_KEY}`) ||
+        event.affectsConfiguration(`${id}.${LABEL_KEY}`)
       ) {
         statusBarItem.dispose();
         showStatusBarItem(context);
@@ -47,11 +49,12 @@ function showStatusBarItem(context: vscode.ExtensionContext) {
       ? vscode.StatusBarAlignment.Right
       : vscode.StatusBarAlignment.Left;
   const priority = conf.get<number>(PRIORITY_KEY);
+  const showLabel = conf.get<boolean>(LABEL_KEY);
   console.log("load config:", alignment, priority);
 
   statusBarItem = vscode.window.createStatusBarItem(alignment, priority);
   statusBarItem.command = "terminal-in-status-bar.toggle";
-  statusBarItem.text = "$(terminal)";
+  statusBarItem.text = `$(terminal)${showLabel ? " Terminal" : ""}`;
   statusBarItem.tooltip = "Toggle Integrated Terminal";
   context.subscriptions.push(statusBarItem);
   statusBarItem.show();
