@@ -35,7 +35,13 @@ export function activate(context: vscode.ExtensionContext) {
   let disposable = vscode.commands.registerCommand(
     "terminal-in-status-bar.toggle",
     () => {
-      vscode.commands.executeCommand("workbench.action.terminal.focus");
+         const isPanelVisible = vscode.window.state.focused && vscode.window.activeTerminal;
+  
+      if (isPanelVisible) {
+         vscode.commands.executeCommand("workbench.action.togglePanel");
+      } else {
+         vscode.commands.executeCommand("workbench.action.terminal.toggleTerminal");
+      }
     }
   );
 
