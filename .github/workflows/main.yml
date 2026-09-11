@@ -1,0 +1,61 @@
+name: Publish VS Code Extension
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+concurrency:
+  group: publish-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Package and publish
+    runs-on: ubuntu-latest
+    environment: 'vscode marketplace'
+    permissions:
+      contents: read
+    env:
+      VSCE_PAT: ${{ secrets.VSCE_PAT }}
+      OVSX_PAT: ${{ secrets.OVSX_PAT }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22.x
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check publish token
+        run: |
+          if [ -z "$VSCE_PAT" ] && [ -z "$OVSX_PAT" ]; then
+            echo "::error::Neither secret VSCE_PAT nor OVSX_PAT is configured. Nothing to publish."
+            exit 1
+          fi
+
+      - name: Publish to Visual Studio Marketplace
+        id: vsmarketplace
+        if: env.VSCE_PAT != ''
+        uses: HaaLeo/publish-vscode-extension@v2
+        with:
+          pat: ${{ env.VSCE_PAT }}
+          registryUrl: https://marketplace.visualstudio.com
+          packagePath: ./
+          skipDuplicate: true
+
+      - name: Publish to Open VSX Registry
+        if: env.OVSX_PAT != ''
+        uses: HaaLeo/publish-vscode-extension@v2
+        with:
+          pat: ${{ env.OVSX_PAT }}
+          registryUrl: https://open-vsx.org
+          extensionFile: ${{ steps.vsmarketplace.outputs.vsixPath }}
+          packagePath: ./
+          skipDuplicate: true
