@@ -1,6 +1,7 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
+import { TerminalToggle } from "./terminalToggle";
 
 const id = "terminal-in-status-bar";
 const ALIGNMENT_KEY = "statusBarAlignment";
@@ -32,14 +33,25 @@ export function activate(context: vscode.ExtensionContext) {
   // The command has been defined in the package.json file
   // Now provide the implementation of the command with registerCommand
   // The commandId parameter must match the command field in package.json
+  const terminalToggle = new TerminalToggle((command) =>
+    vscode.commands.executeCommand(command)
+  );
   let disposable = vscode.commands.registerCommand(
     "terminal-in-status-bar.toggle",
-    () => {
-      vscode.commands.executeCommand("workbench.action.terminal.focus");
-    }
+    () => terminalToggle.toggle()
   );
 
   context.subscriptions.push(disposable);
+
+  // Closing the last terminal hides the panel by default
+  // (terminal.integrated.hideOnLastClosed), so the next click should show it.
+  context.subscriptions.push(
+    vscode.window.onDidCloseTerminal(() => {
+      if (vscode.window.terminals.length === 0) {
+        terminalToggle.markHidden();
+      }
+    })
+  );
 }
 
 function showStatusBarItem(context: vscode.ExtensionContext) {
